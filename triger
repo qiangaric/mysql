@@ -1,0 +1,28 @@
+BEGIN
+ DECLARE  no_more_record INT DEFAULT 0;
+ DECLARE  p_EMP_ID VARCHAR(32);
+ DECLARE  p_EMP_NAME VARCHAR(32);
+ DECLARE  p_EMP_ID_NUMBER VARCHAR(32);
+ DECLARE  p_BANK_NUM VARCHAR(32);
+ DECLARE  p_EMP_TEL VARCHAR(32);
+ DECLARE  cur_record CURSOR FOR 
+SELECT
+	EMP_ID,
+	EMP_NAME,
+	EMP_ID_NUMBER,
+	BANK_NUM,
+	EMP_TEL
+FROM
+	hr_employee;
+ DECLARE  CONTINUE HANDLER FOR NOT FOUND  SET  no_more_record = 1; /*这个是个条件处理,针对NOT FOUND的条件,当没有记录时赋值为1*/
+
+ OPEN  cur_record; /*接着使用OPEN打开游标*/
+ FETCH  cur_record INTO p_EMP_ID, p_EMP_NAME, p_EMP_ID_NUMBER, p_BANK_NUM, p_EMP_TEL; /*把第一行数据写入变量中,游标也随之指向了记录的第一行*/
+
+ WHILE no_more_record != 1 DO
+		UPDATE hr_employee SET EMP_NAME=concat("员工姓名", "__", (SELECT FLOOR(+ RAND() * 100000000))) ,EMP_ID_NUMBER=concat("身份证号", "__", (SELECT FLOOR(+ RAND() * 100000000))),BANK_NUM=concat("银行卡号", "__", (SELECT FLOOR(+ RAND() * 100000000))),EMP_TEL=concat("手机号", "__", (SELECT FLOOR(+ RAND() * 100000000))) WHERE EMP_ID=p_EMP_ID;
+ FETCH  cur_record INTO p_EMP_ID, p_EMP_NAME, p_EMP_ID_NUMBER, p_BANK_NUM, p_EMP_TEL; 
+
+ END WHILE;
+ CLOSE  cur_record;  /*用完后记得用CLOSE把资源释放掉*/
+END
